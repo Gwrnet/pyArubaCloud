@@ -1,8 +1,10 @@
 import json
 from abc import ABCMeta
 from collections import OrderedDict
-
 from ArubaCloud.base.Errors import ValidationError
+# FIXME: rydzu
+import logging
+log = logging.getLogger()
 
 
 class Creator(object):
@@ -21,11 +23,13 @@ class Creator(object):
         headers = {'Content-Type': 'application/json', 'Content-Length': str(len(self.get_json()))}
         response = Http.post(url=url, data=self.get_json(), headers=headers)
         if response.status_code != 200:
-            print(response.content)
+            # FIXME: rydzu
+            log.error(response.content)
             return False
         parsed_response = json.loads(response.content)
         if debug is True:
-            print(parsed_response)
+            # FIXME: rydzu
+            log.debug(parsed_response)
         if parsed_response["Success"]:
             return True
         return False

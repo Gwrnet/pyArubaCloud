@@ -111,6 +111,7 @@ class CloudInterface(JsonInterface):
         json_obj = self.call_method_post(method='GetHypervisors', json_scheme=json_scheme)
         self.json_templates = json_obj
         d = dict(json_obj)
+        self.templates = []  # FIXME: rydzu dublujaca sie lista templateow
         for elem in d['Value']:
             hv = self.hypervisors[elem['HypervisorType']]
             for inner_elem in elem['Templates']:
@@ -210,7 +211,7 @@ class CloudInterface(JsonInterface):
             )
         else:
             raise Exception('Error, no pattern defined')
-        if  sys.version_info.major < (3):
+        if sys.version_info.major < (3):
             return template_list
         else:
             return(list(template_list))
@@ -300,8 +301,11 @@ class CloudInterface(JsonInterface):
         @param (str) ip_id: a string representing the resource id of the IP
         @return: True if json method had success else False
         """
-        ip_id = '    "IpAddressResourceId": %s' % ip_id
-        json_scheme = self.gen_def_json_scheme('SetRemoveIpAddress', ip_id)
+
+        # FIXME: rydzu
+        # ip_id = '    "IpAddressResourceId": %s' % ip_id
+        # json_scheme = self.gen_def_json_scheme('SetRemoveIpAddress', ip_id)
+        json_scheme = self.gen_def_json_scheme('SetRemoveIpAddress', dict(IpAddressResourceId=ip_id))
         json_obj = self.call_method_post(method='SetRemoveIpAddress', json_scheme=json_scheme)
         pprint(json_obj)
         return True if json_obj['Success'] is True else False
@@ -348,8 +352,11 @@ class CloudInterface(JsonInterface):
             raise Exception('NoServerSpecified')
         json_scheme = self.gen_def_json_scheme('SetEnqueueServerDeletion', dict(ServerId=sid))
         json_obj = self.call_method_post(method='SetEnqueueServerDeletion', json_scheme=json_scheme)
-        print('Deletion enqueued successfully for server_id: %s' % sid)
-        return True if json_obj['Success'] is 'True' else False
+        self.logger.debug('json_obj: {}'.format(json_obj))
+        self.logger.debug('Deletion enqueued successfully for server_id: %s' % sid)
+        # FIXME: rydzu
+        # return True if json_obj['Success'] is 'True' else False
+        return True if json_obj['Success'] is True else False
 
     def get_jobs(self):
         json_scheme = self.gen_def_json_scheme('GetJobs')
@@ -460,7 +467,9 @@ class CloudInterface(JsonInterface):
         return True if json_obj['Success'] is True else False
 
     def archive_vm(self, dc, server_id=None):
-        sid = CloudInterface(dc).get_server_detail(server_id)
+        # FIXME: @rydzu
+        # sid = CloudInterface(dc).get_server_detail(server_id)
+        sid = self.get_server_detail(server_id)
         if sid['HypervisorType'] is not 4:
             archive_request = {
                 "ArchiveVirtualServer": {

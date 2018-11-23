@@ -1,3 +1,5 @@
+import ArubaCloud
+
 class VMList(list):
     def __init__(self, *args, **kwargs):
         super(VMList, self).__init__(*args)
@@ -11,7 +13,9 @@ class VMList(list):
                            machine (can be Pro or Smart)
         @return (list): the subset containing the serach result.
         """
-        if name.__class__ is 'base.Server.Pro' or name.__class__ is 'base.Server.Smart':
+        # FIXME: rydzu
+        # if name.__class__ is 'base.Server.Pro' or name.__class__ is 'base.Server.Smart':
+        if name.__class__ is ArubaCloud.objects.VmTypes.Pro or name.__class__ is ArubaCloud.objects.VmTypes.Smart:
             # print('DEBUG: matched VM object %s' % name.__class__)
             pattern = name.vm_name
         else:
